@@ -1,15 +1,22 @@
 const express = require("express");
-const request = require("request");
 const https = require("node:https");
 const bodyParser = require("body-parser");
+const fs = require("fs");
 
 const app = express();
+
+let API_KEY;
 
 app.use(express.static("public"));
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/signup.html");
+
+  fs.readFile("secret.txt", "utf8", (err, data) => {
+    if (err) throw err;
+    API_KEY = data;
+  });
 });
 
 app.post("/", (req, res) => {
@@ -36,7 +43,7 @@ app.post("/", (req, res) => {
 
   const option = {
     method: "POST",
-    auth: "argumpamungkas:707f627cbca4eb458ef65f1dd9886ad3-us17",
+    auth: `argumpamungkas:${API_KEY}`,
   };
 
   const request = https.request(url, option, (response) => {
@@ -60,5 +67,5 @@ app.post("/failure", (req, res) => {
 });
 
 app.listen(process.env.PORT || 3000, () => {
-  console.log(`server is running on port ${process.env.PORT}`);
+  console.log(`server is running on port 3000`);
 });
